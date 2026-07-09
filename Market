@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الداني للخدمات الذكية 🚀</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a, #1e293b);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-color: #ffffff;
+            --text-muted: #94a3b8;
+            --primary: #00f2fe;
+            --secondary: #7000ff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* شريط التنقل والتحكم بالأدوار */
+        nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+
+        .role-switcher {
+            display: flex;
+            background: rgba(255,255,255,0.05);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .role-btn {
+            background: none; border: none; color: var(--text-muted);
+            padding: 8px 16px; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-size: 0.9rem; transition: all 0.3s;
+        }
+
+        .role-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .main-container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+
+        /* شريط البحث والتصفية (للعميل) */
+        .search-container {
+            display: flex; gap: 15px; margin-bottom: 30px;
+        }
+
+        input, select, textarea {
+            flex: 1; padding: 14px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color); border-radius: 14px;
+            color: white; font-size: 1rem; outline: none;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+
+        /* شبكة عرض الخدمات */
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;
+        }
+
+        .card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 24px; padding: 25px; backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; justify-content: space-between;
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); }
+
+        .provider-info { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--secondary); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
+        .service-title { font-size: 1.2rem; margin-bottom: 10px; color: var(--primary); }
+        .service-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 15px; }
+        
+        .meta-info { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 20px; color: var(--text-muted); }
+        .price { color: #fff; font-weight: bold; font-size: 1.1rem; }
+
+        .btn-action {
+            width: 100%; padding: 12px; border: none; border-radius: 12px;
+            font-weight: bold; cursor: pointer; transition: background 0.2s;
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;
+        }
+
+        /* لوحة التحكم بمقدم الخدمة */
+        .hidden { display: none !important; }
+        .section-title { font-size: 1.5rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* الحالات وجداول الحجوزات */
+        .booking-item {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--border-color);
+            padding: 15px 20px; border-radius: 16px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; }
+        .status-معلق { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .status-مؤكد { background: rgba(0, 242, 254, 0.2); color: var(--primary); }
+        .status-مكتمل { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-ملغى { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .actions-cell { display: flex; gap: 8px; }
+        .btn-status { padding: 6px 12px; border: none; border-radius: 8px; font-size: 0.85rem; cursor: pointer; color: white; }
+        .btn-confirm { background: var(--success); }
+        .btn-cancel { background: var(--danger); }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">سوق الداني الرقمي 🏛️</div>
+        <div class="role-switcher">
+            <button class="role-btn active" id="btn-client" onclick="switchRole('client')">تصفح كعميل</button>
+            <button class="role-btn" id="btn-provider" onclick="switchRole('provider')">لوحة مقدم الخدمة</button>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        
+        <div id="client-view">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="ابحث عن خدمات (برمجة، تصميم، كتابة...)" oninput="filterServices()">
+            </div>
+            
+            <h2 class="section-title">الخدمات المتاحة</h2>
+            <div class="grid" id="services-grid"></div>
+        </div>
+
+        <div id="provider-view" class="hidden">
+            <div class="section-title">
+                <span>إضافة خدمة جديدة</span>
+            </div>
+            <div class="card" style="margin-bottom: 40px; width: 100%; max-width: 100%;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="text" id="new-title" placeholder="عنوان الخدمة">
+                    <textarea id="new-desc" placeholder="وصف الخدمة بالتفصيل..." rows="3"></textarea>
+                    <div style="display: flex; gap: 15px;">
+                        <input type="number" id="new-price" placeholder="السعر ($)">
+                        <input type="text" id="new-duration" placeholder="المدة (مثال: يومين)">
+                    </div>
+                    <button class="btn-action" onclick="addNewService()">نشر الخدمة في السوق ✨</button>
+                </div>
+            </div>
+
+            <h2 class="section-title">إدارة الحجوزات الواردة والتحكم بالحالة</h2>
+            <div id="bookings-list"></div>
+        </div>
+
+    </div>
+
+<script>
+    // قاعدة البيانات الوهمية للخدمات (الواجهة الخلفية الأساسية)
+    let services = [
+        { id: 1, title: "برمجة متجر إلكتروني متكامل", desc: "تصميم وبرمجة متجر متجاوب وسريع مع لوحة تحكم.", price: 150, duration: "5 أيام", provider: "مطور محترف", avatar: "💻" },
+        { id: 2, title: "تصميم هوية بصرية وشعارات", desc: "ابتكار شعار فريد وبناء هوية بصرية كاملة لشركتك.", price: 50, duration: "3 أيام", provider: "المصمم المبدع", avatar: "🎨" },
+        { id: 3, title: "كتابة مقالات متوافقة مع السيو SEO", desc: "كتابة 5 مقالات احترافية لجلب الزوار لموقعك بالترتيب.", price: 20, duration: "يوم واحد", provider: "كاتب محتوى", avatar: "✍️" }
+    ];
+
+    // واجهة الحجوزات وتدفق الحالة (معلق/مؤكد/مكتمل/ملغى)
+    let bookings = [
+        { id: 101, serviceTitle: "تصميم هوية بصرية وشعارات", client: "أحمد علي", price: 50, status: "معلق" }
+    ];
+
+    // التبديل بين الأدوار (تحكم في الوصول والمشاهد)
+    function switchRole(role) {
+        document.getElementById('btn-client').classList.toggle('active', role === 'client');
+        document.getElementById('btn-provider').classList.toggle('active', role === 'provider');
+        
+        document.getElementById('client-view').classList.toggle('hidden', role !== 'client');
+        document.getElementById('provider-view').classList.toggle('hidden', role !== 'provider');
+        
+        renderServices();
+        renderBookings();
+    }
+
+    // عرض الخدمات (تصفح الخدمات للعميل)
+    function renderServices() {
+        const grid = document.getElementById('services-grid');
+        grid.innerHTML = '';
+        
+        services.forEach(service => {
+            grid.innerHTML += `
+                <div class="card">
+                    <div>
+                        <div class="provider-info">
+                            <div class="avatar">${service.avatar}</div>
+                            <div>
+                                <div style="font-weight: bold; font-size: 0.9rem;">${service.provider}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">متاح الآن</div>
+                            </div>
+                        </div>
+                        <h3 class="service-title">${service.title}</h3>
+                        <p class="service-desc">${service.desc}</p>
+                    </div>
+                    <div>
+                        <div class="meta-info">
+                            <span>⏱️ المدة: ${service.duration}</span>
+                            <span class="price">${service.price}$</span>
+                        </div>
+                        <button class="btn-action" onclick="bookService('${service.title}', ${service.price})">طلب الخدمة وحجزها</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // فلترة وبحث الخدمات (البحث والتصفية)
+    function filterServices() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const cards = document.querySelectorAll('#services-grid .card');
+        
+        cards.forEach((card, index) => {
+            const title = services[index].title.toLowerCase();
+            const desc = services[index].desc.toLowerCase();
+            if (title.includes(query) || desc.includes(query)) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+    }
+
+    // طلب وحجز الخدمة (جانب العميل)
+    function bookService(title, price) {
+        const newBooking = {
+            id: Date.now(),
+            serviceTitle: title,
+            client: "عميل افتراضي",
+            price: price,
+            status: "معلق"
+        };
+        bookings.push(newBooking);
+        alert(`تم إرسال طلب الحجز بنجاح ومتاح في لوحة التحكم للحالة "معلق"! ✨`);
+        renderBookings();
+    }
+
+    // إضافة قائمة خدمات جديدة (جانب مقدم الخدمة)
+    function addNewService() {
+        const title = document.getElementById('new-title').value.trim();
+        const desc = document.getElementById('new-desc').value.trim();
+        const price = document.getElementById('new-price').value.trim();
+        const duration = document.getElementById('new-duration').value.trim();
+
+        if (!title || !desc || !price || !duration) {
+            alert('فضلاً قم بتعبئة جميع خانات الخدمة!');
+            return;
+        }
+
+        services.push({
+            id: Date.now(),
+            title: title,
+            desc: desc,
+            price: parseInt(price),
+            duration: duration,
+            provider: "أنت (مقدم الخدمة)",
+            avatar: "🚀"
+        });
+
+        alert('تم نشر خدماتك الجديدة في السوق بنجاح!');
+        // تصفير الحقول
+        document.getElementById('new-title').value = '';
+        document.getElementById('new-desc').value = '';
+        document.getElementById('new-price').value = '';
+        document.getElementById('new-duration').value = '';
+        
+        renderServices();
+    }
+
+    // عرض الحجوزات وإدارتها وتحديث حالتها (تدفق الحالة)
+    function renderBookings() {
+        const list = document.getElementById('bookings-list');
+        list.innerHTML = '';
+
+        if(bookings.length === 0) {
+            list.innerHTML = '<p style="color: var(--text-muted); text-align: center;">لا توجد حجوزات واردة حالياً.</p>';
+            return;
+        }
+
+        bookings.forEach(b => {
+            let actionButtons = '';
+            if (b.status === 'معلق') {
+                actionButtons = `
+                    <div class="actions-cell">
+                        <button class="btn-status btn-confirm" onclick="updateStatus(${b.id}, 'مؤكد')">قبول</button>
+                        <button class="btn-status btn-cancel" onclick="updateStatus(${b.id}, 'ملغى')">رفض</button>
+                    </div>
+                `;
+            } else if (b.status === 'مؤكد') {
+                actionButtons = `
+                    <button class="btn-status btn-confirm" onclick="updateStatus(${b.id}, 'مكتمل')">إكمال الخدمة 🏁</button>
+                `;
+            }
+
+            list.innerHTML += `
+                <div class="booking-item">
+                    <div>
+                        <div style="font-weight: bold; font-size: 1.05rem;">${b.serviceTitle}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">بواسطة: ${b.client} | القيمة: ${b.price}$</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="status-badge status-${b.status}">${b.status}</span>
+                        ${actionButtons}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // تحديث تدفق الحالة (معلق -> مؤكد -> مكتمل)
+    function updateStatus(id, newStatus) {
+        const booking = bookings.find(b => b.id === id);
+        if (booking) {
+            booking.status = newStatus;
+            renderBookings();
+        }
+    }
+
+    // التشغيل المبدئي للبيانات والتطبيقات
+    renderServices();
+    renderBookings();
+</script>
+
+</body>
+</html>
